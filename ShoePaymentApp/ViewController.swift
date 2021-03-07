@@ -8,7 +8,8 @@
 import UIKit
 import PassKit
 
-class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
+class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate, PKPaymentAuthorizationViewControllerDelegate {
+
 
     
     struct Shoes {
@@ -55,10 +56,20 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
             request.supportedNetworks = paymentNetworks
             request.paymentSummaryItems = [paymentItem]
             
-        }else {
-            displayDefaultAlert(title: "Error", message: "Unable to make Apple Pay transaction")
+            guard let paymentVC = PKPaymentAuthorizationViewController(paymentRequest: request)
+         
+            else {
+            
+                displayDefaultAlert(title: "Error", message: "Unable to make Apple Pay transaction")
+                return
         }
+            paymentVC.delegate = self
+            self.present(paymentVC, animated: true, completion: nil)
     }
+    }
+      
+        
+
     
  
     //displays an alert 
@@ -70,6 +81,17 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
         
         alert.addAction(okAction)
         self.present(alert, animated: true, completion: nil)
+    }
+    
+    func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
+        
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func paymentAuthorizationViewController(_ controller: PKPaymentAuthorizationViewController, didAuthorizePayment payment: PKPayment, handler completion: @escaping (PKPaymentAuthorizationResult) -> Void) {
+        
+        dismiss(animated: true, completion: nil)
+        displayDefaultAlert(title: "Success", message: "Transaction Complete")
     }
     
     
@@ -88,7 +110,6 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
         print(shoeData.count)
         return shoeData.count
     }
-
 
 }
 
