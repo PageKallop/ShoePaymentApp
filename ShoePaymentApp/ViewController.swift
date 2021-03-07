@@ -7,13 +7,15 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UIPickerViewDataSource {
+
+    
     
     struct Shoes {
         var name: String
         var price: Double 
     }
-    
+    //shoe array 
     let shoeData = [
         Shoes(name: "Nike Air Force 1 High LV8", price: 120.00),
         Shoes(name: "adidas Super Stars", price: 135.00),
@@ -28,11 +30,15 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        shoePickerView.dataSource = self
     }
     
     @IBAction func buyButton(_ sender: UIButton) {
-        print("pressed")
+        
+        let selectedShoe = shoePickerView.selectedRow(inComponent: 0)
+        let shoe = shoeData[selectedShoe]
+//        let paymentItem = PKPaymentSummaryItem.init(priceLabel: shoe.name)
     }
     
  
@@ -45,6 +51,18 @@ class ViewController: UIViewController {
         
         alert.addAction(okAction)
         self.present(alert, animated: true, completion: nil)
+    }
+    
+    
+    //UIPicker methods
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        
+        return shoeData.count
     }
 
 
