@@ -6,10 +6,10 @@
 //
 
 import UIKit
+import PassKit
 
-class ViewController: UIViewController, UIPickerViewDataSource {
+class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 
-    
     
     struct Shoes {
         var name: String
@@ -31,6 +31,8 @@ class ViewController: UIViewController, UIPickerViewDataSource {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        
+        shoePickerView.delegate = self
         shoePickerView.dataSource = self
     }
     
@@ -38,7 +40,24 @@ class ViewController: UIViewController, UIPickerViewDataSource {
         
         let selectedShoe = shoePickerView.selectedRow(inComponent: 0)
         let shoe = shoeData[selectedShoe]
-//        let paymentItem = PKPaymentSummaryItem.init(priceLabel: shoe.name)
+        let paymentItem = PKPaymentSummaryItem.init(label: shoe.name, amount: NSDecimalNumber(value: shoe.price))
+        print(paymentItem)
+        
+        let paymentNetworks = [PKPaymentNetwork.amex, .discover, .masterCard, .visa]
+        //checks if user can make payment with network
+        if PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: paymentNetworks) {
+            //payment request
+            let request = PKPaymentRequest()
+            request.currencyCode = "USD"
+            request.countryCode = "US"
+            request.merchantIdentifier = "merchant.com.pranavwadhwa.Shoe-Store"
+            request.merchantCapabilities = PKMerchantCapability.capability3DS
+            request.supportedNetworks = paymentNetworks
+            request.paymentSummaryItems = [paymentItem]
+            
+        }else {
+            displayDefaultAlert(title: "Error", message: "Unable to make Apple Pay transaction")
+        }
     }
     
  
@@ -60,8 +79,13 @@ class ViewController: UIViewController, UIPickerViewDataSource {
         return 1
     }
     
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+       
+        return shoeData[row].name
+    }
+    
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        
+        print(shoeData.count)
         return shoeData.count
     }
 
