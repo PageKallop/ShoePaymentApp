@@ -31,12 +31,12 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
+      
         shoePickerView.delegate = self
         shoePickerView.dataSource = self
+  
     }
-    
+    //buy button functionality 
     @IBAction func buyButton(_ sender: UIButton) {
         
         let selectedShoe = shoePickerView.selectedRow(inComponent: 0)
@@ -102,13 +102,21 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-       
+        
         return shoeData[row].name
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         print(shoeData.count)
+        
         return shoeData.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        
+        let priceString = String(format: "%.02f", shoeData[row].price)
+        priceLabel.text = "$\(priceString)"
+        print(priceString)
     }
 
 }
